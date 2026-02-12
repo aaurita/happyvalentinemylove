@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Kynthia & Fadil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-soft: #ffc0cb;
+            --pink-hot: #ff69b4;
+            --pink-dark: #ff1493;
+        }
+
+        /* CUSTOM SCROLLBAR TEMA PINK */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--pink-soft); }
+        ::-webkit-scrollbar-thumb { background: var(--pink-hot); border-radius: 10px; }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--pink-soft);
+            background-image: radial-gradient(var(--pink-hot) 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+            color: #4a4a4a;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* HIASAN BG */
+        .decor { position: absolute; pointer-events: none; z-index: 1; font-size: 1.5rem; animation: floatAnim 6s infinite ease-in-out; opacity: 0.6; }
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-40px) rotate(20deg); }
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 192, 203, 0.4);
+            backdrop-filter: blur(5px); z-index: 90; display: none;
+        }
+
+        /* MODAL STYLE */
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(255, 20, 147, 0.25);
+            text-align: center;
+            width: 340px; 
+            min-height: 450px;
+            z-index: 95;
+            border: 8px solid var(--pink-hot);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active { display: flex; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* MODAL ALERT */
+        .modal-alert {
+            background: white;
+            padding: 25px;
+            border-radius: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+            z-index: 200;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0); 
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-alert.active { visibility: visible; transform: translate(-50%, -50%) scale(1); }
+
+        h2 { font-family: 'Pacifico', cursive; color: var(--pink-dark); margin-top: 0; font-size: 1.8rem; }
+        p { font-weight: 700; line-height: 1.5; margin-bottom: 20px; }
+        .gif-display { width: 50%; border-radius: 25px; margin-bottom: 20px; }
+        .img-display { width: 80%; margin-bottom: 20px; }
+
+        button {
+            background: var(--pink-hot); color: white; border: none;
+            padding: 14px 25px; border-radius: 50px; cursor: pointer;
+            font-weight: bold; margin: 10px 4px; transition: 0.3s;
+            box-shadow: 0 5px 0px #d64d8f; font-family: 'Quicksand', sans-serif;
+            width: 90%;
+        }
+        button:hover { background: var(--pink-dark); transform: translateY(-3px); }
+        button:active { transform: translateY(2px); box-shadow: none; }
+        button:disabled { background: #eee; color: #aaa; box-shadow: none; cursor: not-allowed; }
+
+        .btn-no { background: #ff4d4d; box-shadow: 0 5px 0px #b33636; }
+        input { padding: 14px; border-radius: 15px; border: 3px solid var(--pink-soft); width: 85%; margin-bottom: 20px; text-align: center; font-weight: bold; outline: none; }
+
+        .letter-content { text-align: justify; font-size: 0.9rem; max-height: 250px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px; line-height: 1.6; }
+        .envelope-btn { margin-top: 25px; cursor: pointer; display: none; text-align: center; }
+        .heart-icon { font-size: 50px; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    </style>
+</head>
+<body>
+
+    <div class="decor" style="top: 10%; left: 5%;">💖</div>
+    <div class="decor" style="top: 20%; right: 10%;">🌸</div>
+    <div class="decor" style="bottom: 15%; left: 10%;">🎀</div>
+    <div class="decor" style="bottom: 10%; right: 5%;">✨</div>
+
+    <audio id="bgMusic" loop>
+        <source src="Glenn_Fredly_-_Kasih_Putih-Glenn_Fredly_(mp3.pm).mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="modal active" id="modalIntro">
+        <img class="gif-display" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY5eXJqZXR4ZXR4ZXR4ZXR4ZXR4ZXR4ZXR4ZXR4ZXR4ZXR4ZXR4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9iZCZjdD1n/c76IJLufpNwSULPk77/giphy.gif">
+        <h2>Hiii Fadil Sayang!</h2>
+        <p>Will u be my Valentine? <br> Gak boleh nolak ya! 😤</p>
+        <button onclick="pindahKeMenu()">MAU BANGET!</button>
+        <button class="btn-no" style="width: 50%;" onclick="showAlert('HEH!', 'Pilih tombol pink ya sayang! Gak ada pilihan laen! 😤', true)">Gak.</button>
+    </div>
+
+    <div class="modal" id="modalMenu">
+        <h2>Pilih Hadiahmu! 🎁</h2>
+        <p>Ayo pilih sesuka hati kamu! <br> Semoga dapet yang bagus ya hehe</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; align-items: center; width: 100%;">
+            <button id="btn-h1" onclick="prosesKlaim('btn-h1')">🎁 Hadiah 1</button>
+            <button id="btn-h2" onclick="prosesKlaim('btn-h2')">🎁 Hadiah 2</button>
+            <button id="btn-h3" onclick="prosesKlaim('btn-h3')">🎁 Hadiah 3</button>
+        </div>
+        <div id="surat" class="envelope-btn" onclick="openLetterNotification()">
+            <div class="heart-icon">💌</div>
+            <p style="font-size: 0.85rem;">Klik buat baca surat!</p>
+        </div>
+    </div>
+
+    <div class="modal" id="modalShow">
+        <h2 id="judulH">Hadiah!</h2>
+        <img id="imgH" class="img-display" src="">
+        <p>SS buat klaim ke Kynthia ya! 📸</p>
+        <button onclick="kembaliKeMenu()">Oke Sayang!</button>
+    </div>
+
+    <div class="modal" id="modalQuiz">
+        <h2>Ujian Kesetiaan! 🤨</h2>
+        <p>Kapan tanggal jadian kita? <br> (Format: 01 Januari 2026)</p>
+        <input type="text" id="tglJadian" placeholder="Isi di sini...">
+        <button onclick="cekTgl()">Cek Jawaban</button>
+    </div>
+
+    <div class="modal" id="modalSurat">
+        <h2>Untuk Fadil... 💌</h2>
+        <div class="letter-content">
+            Hai sayang, selamat hari kasih sayang! <br><br>
+            Makasih udah sabar banget ngadepin Kynthia yang kadang sengklek. Walaupun kamu sering bikin kesel, tapi tetep aja kamu favorit aku sedunia. <br><br>
+            Aku seneng banget kita bisa bareng terus sampai sekarang. Semoga kedepannya kita makin solid dan makin sering ketawa bareng. <br><br>
+            Love you more than bakso! <br><br>
+            — Kynthia yang paling lucu.
+        </div>
+        <button onclick="kembaliKeMenu()">Tutup</button>
+    </div>
+
+    <div class="modal-alert" id="customAlert">
+        <h2 id="alertTit">Notif</h2>
+        <p id="alertMsg"></p>
+        <button id="alertBtn" onclick="tutupAlert()">Tombol</button>
+    </div>
+
+    <script>
+        let claimCounter = 0; 
+        const lagu = document.getElementById('bgMusic');
+        const overlay = document.getElementById('overlay');
+
+        function switchModal(idTarget) {
+            document.querySelectorAll('.modal').forEach(m => {
+                m.classList.remove('active');
+                m.style.display = 'none';
+            });
+            const target = document.getElementById(idTarget);
+            target.style.display = 'flex';
+            setTimeout(() => target.classList.add('active'), 10);
+        }
+
+        function showAlert(judul, pesan, isError, callback = null) {
+            const tit = document.getElementById('alertTit');
+            const btn = document.getElementById('alertBtn');
+            const modal = document.getElementById('customAlert');
+            tit.innerText = judul;
+            document.getElementById('alertMsg').innerText = pesan;
+            if(isError) {
+                modal.style.borderColor = "#ff4d4d"; tit.style.color = "#ff4d4d";
+                btn.style.background = "#ff4d4d"; btn.innerText = "Oke Maaf";
+            } else {
+                modal.style.borderColor = "var(--pink-hot)"; tit.style.color = "var(--pink-dark)";
+                btn.style.background = "var(--pink-hot)"; btn.innerText = "Makasih Sayang";
+            }
+            modal.classList.add('active');
+            overlay.style.display = "block";
+            btn.onclick = function() { tutupAlert(); if (callback) callback(); };
+        }
+
+        function tutupAlert() { document.getElementById('customAlert').classList.remove('active'); }
+        function pindahKeMenu() { switchModal('modalMenu'); lagu.play(); overlay.style.display = "block"; }
+        function kembaliKeMenu() { switchModal('modalMenu'); }
+
+        function prosesKlaim(btnId) {
+            if (claimCounter === 0) { 
+                tampilKontenHadiah(1); 
+                document.getElementById(btnId).disabled = true; 
+                claimCounter++; 
+            } 
+            else if (claimCounter === 1) { 
+                tampilKontenHadiah(2); 
+                document.getElementById(btnId).disabled = true; 
+                claimCounter++; 
+            } 
+            else if (claimCounter === 2) { 
+                switchModal('modalQuiz'); 
+            }
+        }
+
+        function tampilKontenHadiah(hadiahKe) {
+            const i = document.getElementById('imgH');
+            const t = document.getElementById('judulH');
+            if(hadiahKe === 1) { t.innerText = "Cocholate Coupon"; i.src = "1.png"; }
+            if(hadiahKe === 2) { t.innerText = "Bouquet Coupon"; i.src = "2.png"; }
+            if(hadiahKe === 3) { 
+                t.innerText = "Hug and Kiss Coupon"; i.src = "3.png"; 
+                // Menonaktifkan semua tombol hadiah setelah hadiah ketiga diklaim
+                document.getElementById('btn-h1').disabled = true;
+                document.getElementById('btn-h2').disabled = true;
+                document.getElementById('btn-h3').disabled = true;
+                document.getElementById('surat').style.display = "block";
+                claimCounter++;
+            }
+            switchModal('modalShow');
+        }
+
+        function cekTgl() {
+            const inp = document.getElementById('tglJadian').value.toLowerCase();
+            if(inp.includes("15") && inp.includes("oktober") && inp.includes("2024")) {
+                showAlert("YEAY!", "Pinter banget ayang! Nih hadiah utamanya..", false, () => tampilKontenHadiah(3));
+            } else {
+                showAlert("SALAH!", "Masa lupa tanggal jadian? Parah banget Fadil! 😡", true);
+            }
+        }
+
+        function openLetterNotification() {
+            showAlert("WAAHH!", "Selamat ya udah berhasil klaim semua hadiahnya! 🥳 Ini ada bonus surat cinta spesial buat kamu..", false, () => switchModal('modalSurat'));
+        }
+    </script>
+</body>
+</html>
